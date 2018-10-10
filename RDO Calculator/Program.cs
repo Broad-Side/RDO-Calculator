@@ -11,7 +11,7 @@ namespace RDO_Calculator
     {
         static void Main(string[] args)
         {
-            DirectoryInfo TargetDirectory = new DirectoryInfo(@"C:\Users\Deanf\OneDrive\### Holding Bay ###\Test\Data");
+            DirectoryInfo TargetDirectory = new DirectoryInfo(@"D:\Test\Data");
             WalkDirectoryTree(TargetDirectory);
         }
 
@@ -20,10 +20,12 @@ namespace RDO_Calculator
             System.IO.FileInfo[] files = null;
             System.IO.DirectoryInfo[] subDirs = null;
 
-            string sDestinationPath = @"C:\Users\Deanf\OneDrive\### Holding Bay ###\Test\Output";
+            string sDestinationPath = @"D:\Test\Output";
             
             //Process all the files in the root directory
             files = root.GetFiles("*.*");
+
+            int iCount = 0;
 
             if (files != null)
             {
@@ -35,13 +37,15 @@ namespace RDO_Calculator
                     Set filename currently uses the current, but is setup this way so that a an index or such can be 
                     added so that the program can handle files with the same name in diffrent locations
                     */
-
-                    string sFileName = System.IO.Path.GetFileName(element.Name);
+                    
+                    string sFileName = iCount.ToString + " " + System.IO.Path.GetFileName(element.Name);
                     string sDestFile = System.IO.Path.Combine(sDestinationPath, sFileName);
                     System.IO.File.Copy(element.FullName, sDestFile, true);
                     
                     Console.WriteLine(element.FullName);
                     
+                    iCount++;
+                                        
                 }
 
                 // Now find all the subdirectories under this directory.
