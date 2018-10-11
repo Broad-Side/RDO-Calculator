@@ -7,12 +7,19 @@ using System.IO;
 
 namespace RDO_Calculator
 {
+    static class Butter
+    {
+        public static int iCount;
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
             DirectoryInfo TargetDirectory = new DirectoryInfo(@"D:\Test\Data");
             WalkDirectoryTree(TargetDirectory);
+
+            Butter.iCount = 0;
         }
 
         static void WalkDirectoryTree(System.IO.DirectoryInfo root)
@@ -25,27 +32,19 @@ namespace RDO_Calculator
             //Process all the files in the root directory
             files = root.GetFiles("*.*");
 
-            int iCount = 0;
-
             if (files != null)
             {
                 foreach (System.IO.FileInfo element in files)
                 {
                     Console.WriteLine($"{element}");
 
-                    /*
-                    Set filename currently uses the current, but is setup this way so that a an index or such can be 
-                    added so that the program can handle files with the same name in diffrent locations
-                    */
-                    
-                    string sFileName = iCount.ToString + " " + System.IO.Path.GetFileName(element.Name);
+                    string sFileName = Butter.iCount.ToString() + " " + System.IO.Path.GetFileName(element.Name);
                     string sDestFile = System.IO.Path.Combine(sDestinationPath, sFileName);
                     System.IO.File.Copy(element.FullName, sDestFile, true);
                     
                     Console.WriteLine(element.FullName);
-                    
-                    iCount++;
-                                        
+
+                    Butter.iCount++;                                                         
                 }
 
                 // Now find all the subdirectories under this directory.
