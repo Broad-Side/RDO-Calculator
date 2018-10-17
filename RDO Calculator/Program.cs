@@ -13,27 +13,29 @@ namespace RDO_Calculator
     {
         static void Main(string[] args)
         {
-            FileInfo TargetFile = new FileInfo
-                (@"C:\Users\Deanf\OneDrive\My Documents\Work\### TimeSheets ###\Dean Furley\2017\1-01-2017 Dean Furley.xlsm");
-            //DirectoryInfo TargetDirectory = new DirectoryInfo
-            //    (@"C:\Users\Deanf\OneDrive\My Documents\Work\### TimeSheets ###\Dean Furley\2018\18-03-2018 Dean Furley.xlsm");
-            // WalkDirectoryTree(TargetDirectory);
+            //FileInfo TargetFile = new FileInfo
+            //    (@"C:\Users\Deanf\OneDrive\My Documents\Work\### TimeSheets ###\Dean Furley\2017\6-08-2017 Dean Furley.xlsm");
 
-            Butter.iCount = 0;
+            DirectoryInfo TargetDirectory = new DirectoryInfo
+                (@"C:\Users\Deanf\OneDrive\My Documents\Work\### TimeSheets ###\Dean Furley\2016");
+            WalkDirectoryTree(TargetDirectory);
 
-            TimeSheet testTimesheet = new TimeSheet();
-
-            // testTimesheet.Load(TargetFile);
-
-            //Console.WriteLine(testTimesheet.ValidFile());
-
-            // Console.WriteLine("Emp Number: " + testTimesheet.EmpNumber.ToString());
-            Console.WriteLine("Status: " + testTimesheet.Load(TargetFile).ToString());
-            Console.WriteLine("RDO Banked: " + testTimesheet.RdoBanked.ToString());
-            Console.WriteLine("RDO Taken: " + testTimesheet.rdoTaken.ToString());
-            Console.WriteLine("TimeSheet Date: " + testTimesheet.TsDate.ToString());
 
             Console.ReadLine();
+
+            /*
+             * Butter.iCount = 0;
+             * TimeSheet testTimesheet = new TimeSheet();
+             * testTimesheet.Load(TargetFile);
+             * Console.WriteLine(testTimesheet.ValidFile());
+             * Console.WriteLine("Emp Number: " + testTimesheet.EmpNumber.ToString());
+             * Console.WriteLine("Status: " + testTimesheet.Load(TargetFile).ToString());
+             * Console.WriteLine("RDO Banked: " + testTimesheet.RdoBanked.ToString());
+             * Console.WriteLine("RDO Taken: " + testTimesheet.rdoTaken.ToString());
+             * Console.WriteLine("TimeSheet Date: " + testTimesheet.TsDate.ToString());
+             * Console.WriteLine("Employee Number: " + testTimesheet.EmpNumber.ToString());
+             * Console.ReadLine();
+            */
         }
 
         static void WalkDirectoryTree(System.IO.DirectoryInfo root)
@@ -41,7 +43,7 @@ namespace RDO_Calculator
             System.IO.FileInfo[] files = null;
             System.IO.DirectoryInfo[] subDirs = null;
 
-            string sDestinationPath = @"D:\Test\Output";
+            // string sDestinationPath = @"D:\Test\Output";
 
             // Process all the files in the root directory
             files = root.GetFiles("*.*");
@@ -50,15 +52,30 @@ namespace RDO_Calculator
             {
                 foreach (System.IO.FileInfo element in files)
                 {
-                    // Console.WriteLine($"{element}");
 
-                    string sFileName = Butter.iCount.ToString() + " " + System.IO.Path.GetFileName(element.Name);
-                    string sDestFile = System.IO.Path.Combine(sDestinationPath, sFileName);
-                    System.IO.File.Copy(element.FullName, sDestFile, true);
+                    TimeSheet weeklyTimeSheet = new TimeSheet();
 
-                    // Console.WriteLine(element.FullName);
+                    weeklyTimeSheet.Load(element);
+                                                    
+                       
 
-                    Butter.iCount++;
+                    Console.WriteLine("Status: " + weeklyTimeSheet.Load(element).ToString());
+                    Console.WriteLine("RDO Banked: " + weeklyTimeSheet.RdoBanked.ToString());
+                    Console.WriteLine("RDO Taken: " + weeklyTimeSheet.rdoTaken.ToString());
+                    Console.WriteLine("TimeSheet Date: " + weeklyTimeSheet.TsDate.ToString());
+                    Console.WriteLine("Employee Number: " + weeklyTimeSheet.EmpNumber.ToString());
+
+
+                    /* Old Testing Code to Prove the Recursiveness of the program
+                     * 
+                     * Console.WriteLine($"{element}");
+                     * string sFileName = Butter.iCount.ToString() + " " + System.IO.Path.GetFileName(element.Name);
+                     * string sDestFile = System.IO.Path.Combine(sDestinationPath, sFileName);
+                     * System.IO.File.Copy(element.FullName, sDestFile, true);
+                     * Console.WriteLine(element.FullName);
+                    */
+
+                    // Butter.iCount++;
                 }
 
                 // Now find all thne subdirectories under this directory.
@@ -80,14 +97,14 @@ namespace RDO_Calculator
     {
         private double pRdoBanked;
         private double pRdoTaken;
-        //private int pEmpNumber;
+        private int pEmpNumber;
         private DateTime pTsDate;
-        // System.IO.DirectoryInfo
+        
         public bool Load(System.IO.FileInfo pFilePath)
         {
             Excel.Application excelApp = new Excel.Application();
             // Set Work Book
-            Excel.Workbook wb = excelApp.Workbooks.Open(pFilePath.ToString());
+            Excel.Workbook wb = excelApp.Workbooks.Open(pFilePath.FullName.ToString());
             // Set Work Sheet
             Excel.Worksheet ws = wb.Sheets[1];
             // Set Range            
@@ -117,6 +134,11 @@ namespace RDO_Calculator
 
             if (s.Contains("Employee Name:"))
             {
+
+                // Fetch employee number from the spread sheet.
+                rng = ws.Cells[8, 3];
+                pEmpNumber = Int32.Parse(rng.Text.ToString());
+
                 rng = ws.Cells[6, 8];
                 pTsDate = DateTime.Parse(rng.Text.ToString());
 
@@ -195,16 +217,16 @@ namespace RDO_Calculator
             set { /* Some logic */ }
         }
         
-        //public int EmpNumber
-        //{
-        //    get
-        //    {
-        //        return (pEmpNumber);
-        //    }
-        //    set
-        //    { /* Some logic */
-        //    }
-        //}
+        public int EmpNumber
+        {
+            get
+            {
+                return (pEmpNumber);
+            }
+            set
+            { /* Some logic */
+            }
+        }
 
         public DateTime TsDate
         {
